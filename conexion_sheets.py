@@ -6,10 +6,10 @@ def obtener_datos():
     cliente = gspread.service_account(filename="credenciales.json")
 
     # Abrir la hoja de cálculo por su ID
-    archivo = cliente.open_by_key("1buritrrLPtMupfN5qy5Qj_HRTj_y8I654iX5DTiGpEk")
+    archivo = cliente.open_by_key("1xpRN_b_Zo1_9yIYlFy53k4xu0v3Zdit8niwjkQMFi64")
 
     # Seleccionar la primera hoja
-    hoja = archivo.sheet1
+    hoja = archivo.worksheet("Respuestas")
 
     # Leer todos los registros
     datos = hoja.get_all_records()
@@ -20,7 +20,7 @@ def obtener_datos():
 if __name__ == "__main__":
     # Autenticamos para obtener el título en la prueba individual
     cliente_prueba = gspread.service_account(filename="credenciales.json")
-    archivo_prueba = cliente_prueba.open_by_key("1buritrrLPtMupfN5qy5Qj_HRTj_y8I654iX5DTiGpEk")
+    archivo_prueba = cliente_prueba.open_by_key("1xpRN_b_Zo1_9yIYlFy53k4xu0v3Zdit8niwjkQMFi64")
 
     print("¡Conexión exitosa!")
     print(f"Título de la hoja: {archivo_prueba.title}")

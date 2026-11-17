@@ -1,184 +1,1091 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard PROSIP</title>
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/estilo.css') }}">
+
+    <title>PROSIP | Dashboard Analítico</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Iconos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #f2f5fb;
+            color: #17243b;
+        }
+
+        .encabezado {
+            background: linear-gradient(120deg, #102344, #174b83);
+            color: white;
+            padding: 35px 40px;
+            border-bottom: 5px solid #d9a52e;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 58px;
+            height: 58px;
+            background: #d9a52e;
+            color: #102344;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .encabezado h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .encabezado p {
+            margin: 5px 0 0;
+            color: #dce7f5;
+        }
+
+        .titulo-panel {
+            margin-top: 30px;
+            font-size: 23px;
+            font-weight: 700;
+        }
+
+        .contenido {
+            max-width: 1450px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .subtitulo {
+            color: #748198;
+            margin-bottom: 25px;
+        }
+
+        .tarjetas {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tarjeta {
+            background: white;
+            padding: 23px;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(20,40,80,.07);
+            border-left: 5px solid #d9a52e;
+            transition: .3s;
+            animation: aparecer .7s ease both;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 12px 28px rgba(20,40,80,.13);
+        }
+
+        .tarjeta:nth-child(2) {
+            animation-delay: .1s;
+        }
+
+        .tarjeta:nth-child(3) {
+            animation-delay: .2s;
+        }
+
+        .tarjeta:nth-child(4) {
+            animation-delay: .3s;
+        }
+
+        .icono {
+            width: 48px;
+            height: 48px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            margin-bottom: 15px;
+        }
+
+        .azul {
+            background: #e4edff;
+            color: #2456a6;
+        }
+
+        .verde {
+            background: #e0f5e9;
+            color: #16834c;
+        }
+
+        .naranja {
+            background: #fff0dc;
+            color: #d38b24;
+        }
+
+        .morado {
+            background: #eee6ff;
+            color: #7450b7;
+        }
+
+        .tarjeta h2 {
+            font-size: 25px;
+            font-weight: 800;
+            margin: 8px 0;
+            color: #102344;
+        }
+
+        .tarjeta p {
+            color: #66758c;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .tarjeta span {
+            color: #9aa5b5;
+            font-size: 11px;
+        }
+
+        .seccion-titulo {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 30px 0 18px;
+            color: #102344;
+        }
+
+        .graficos {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 5px 20px rgba(20,40,80,.06);
+            margin-bottom: 22px;
+            animation: aparecer .8s ease both;
+        }
+
+        .panel h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #17365e;
+        }
+
+        .grafico-contenedor {
+            position: relative;
+            height: 300px;
+        }
+
+        .herramientas {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .herramientas input,
+        .herramientas select {
+            border: 1px solid #dce3ed;
+            padding: 11px 14px;
+            border-radius: 10px;
+            outline: none;
+            background: #fff;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .herramientas input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .herramientas input:focus,
+        .herramientas select:focus {
+            border-color: #2456a6;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        thead {
+            background: #102344;
+            color: white;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            font-size: 12px;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        tbody tr {
+            transition: .2s;
+        }
+
+        tbody tr:hover {
+            background: #eef4ff;
+        }
+
+        .importe {
+            color: #16834c;
+            font-weight: 700;
+        }
+
+        .saldo {
+            color: #2456a6;
+            font-weight: 700;
+        }
+
+        .boton {
+            background: #102344;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .3s;
+        }
+
+        .boton:hover {
+            background: #d9a52e;
+            color: #102344;
+            transform: scale(1.04);
+        }
+
+        .sin-datos {
+            text-align: center;
+            padding: 25px;
+            color: #8b98aa;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #8290a3;
+            font-size: 12px;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media(max-width: 1000px) {
+            .tarjetas {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 650px) {
+            .tarjetas,
+            .graficos {
+                grid-template-columns: 1fr;
+            }
+
+            .contenido {
+                padding: 15px;
+            }
+
+            .encabezado {
+                padding: 25px 20px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <main class="contenedor">
-        <header class="encabezado">
-            <div class="marca">
-                <div class="logo">P</div>
-                <div>
-                    <h1>PROSIP</h1>
-                    <p>Sistema de Declaraciones Juradas</p>
-                </div>
-            </div>
-            <h2>Panel de control</h2>
-            <p>Registro, análisis y control de gastos declarados</p>
-        </header>
 
-        {% if error %}
-        <div class="alerta">
-            <strong>No se pudieron cargar los datos.</strong>
-            <p>{{ error }}</p>
-            <p>Revisa la conexión a Google Sheets y los nombres de las columnas.</p>
+<!-- ENCABEZADO -->
+<header class="encabezado">
+
+    <div class="marca">
+        <div class="logo">P</div>
+
+        <div>
+            <h1>PROSIP</h1>
+            <p>Sistema Inteligente de Declaraciones Juradas</p>
         </div>
-        {% else %}
+    </div>
 
-        <section class="tarjetas">
-            <article class="tarjeta">
-                <div class="icono azul">▤</div>
-                <p>Total de declaraciones</p>
-                <h2>{{ total_registros }}</h2>
-                <span>Registros de la hoja</span>
-            </article>
+    <h2 class="titulo-panel">
+        <i class="bi bi-speedometer2"></i>
+        Panel de Control Analítico
+    </h2>
 
-            <article class="tarjeta">
-                <div class="icono verde">S/</div>
-                <p>Importe total declarado</p>
-                <h2>S/ {{ "{:,.2f}".format(total_importe) }}</h2>
-                <span>Suma de importes válidos</span>
-            </article>
+    <p>Gestión, seguimiento y análisis de gastos declarados</p>
 
-            <article class="tarjeta">
-                <div class="icono turquesa">▦</div>
-                <p>Proyectos registrados</p>
-                <h2>{{ proyectos|length }}</h2>
-                <span>Proyectos diferentes</span>
-            </article>
+</header>
 
-            <article class="tarjeta">
-                <div class="icono naranja">◎</div>
-                <p>Centros de costo</p>
-                <h2>{{ centros|length }}</h2>
-                <span>Centros identificados</span>
-            </article>
-        </section>
 
-        <section class="graficos">
-            <article class="panel">
-                <h3>Declaraciones por proyecto</h3>
-                {% if grafico_proyectos %}
-                <img src="data:image/png;base64,{{ grafico_proyectos }}"
-                     alt="Gráfico de declaraciones por proyecto">
-                {% else %}
-                <p>No hay datos para mostrar.</p>
-                {% endif %}
-            </article>
+<main class="contenido">
 
-            <article class="panel">
-                <h3>Importes por centro de costo</h3>
-                {% if grafico_centros %}
-                <img src="data:image/png;base64,{{ grafico_centros }}"
-                     alt="Gráfico de importes por centro de costo">
-                {% else %}
-                <p>No hay datos para mostrar.</p>
-                {% endif %}
-            </article>
+    <p class="subtitulo">
+        Bienvenido al sistema PROSIP. Aquí puedes visualizar y analizar
+        la información registrada en las declaraciones juradas.
+    </p>
 
-            <article class="panel">
-                <h3>Declaraciones por solicitante</h3>
-                {% if grafico_solicitantes %}
-                <img src="data:image/png;base64,{{ grafico_solicitantes }}"
-                     alt="Gráfico por solicitante">
-                {% else %}
-                <p>No hay datos para mostrar.</p>
-                {% endif %}
-            </article>
 
-            <article class="panel">
-                <h3>Declaraciones por mes</h3>
-                {% if grafico_meses %}
-                <img src="data:image/png;base64,{{ grafico_meses }}"
-                     alt="Gráfico por mes">
-                {% else %}
-                <p>No hay datos para mostrar.</p>
-                {% endif %}
-            </article>
-        </section>
+    {% if error %}
 
-        <section class="panel">
-            <h3>Declaraciones por proyecto</h3>
-            <div class="tabla-contenedor">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Proyecto</th>
-                            <th>Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for fila in proyectos %}
-                        <tr>
-                            <td>{{ fila["Proyecto"] }}</td>
-                            <td>{{ fila["Cantidad"] }}</td>
-                        </tr>
-                        {% else %}
-                        <tr><td colspan="2">Sin registros.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="alert alert-danger">
+        <strong>No se pudieron cargar los datos.</strong>
+        <p>{{ error }}</p>
+    </div>
+
+    {% else %}
+
+
+    <!-- INDICADORES PRINCIPALES -->
+
+    <h2 class="seccion-titulo">
+        <i class="bi bi-bar-chart-line"></i>
+        Resumen general
+    </h2>
+
+    <section class="tarjetas">
+
+        <article class="tarjeta">
+            <div class="icono azul">
+                <i class="bi bi-file-earmark-text"></i>
             </div>
-        </section>
 
-        <section class="panel">
-            <h3>Importes por centro de costo</h3>
-            <div class="tabla-contenedor">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Centro de costo</th>
-                            <th>Importe total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for fila in importes_centro %}
-                        <tr>
-                            <td>{{ fila["Centro de costo"] }}</td>
-                            <td>S/ {{ "{:,.2f}".format(fila["Importe total"]) }}</td>
-                        </tr>
-                        {% else %}
-                        <tr><td colspan="2">Sin registros.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <p>Total de declaraciones</p>
+
+            <h2 class="contador"
+                data-valor="{{ total_registros | default(0, true) }}">
+                0
+            </h2>
+
+            <span>Registros de Google Sheets</span>
+        </article>
+
+
+        <article class="tarjeta">
+            <div class="icono verde">
+                <i class="bi bi-wallet2"></i>
             </div>
-        </section>
 
-        <section class="panel">
-            <h3>Declaraciones por solicitante</h3>
-            <div class="tabla-contenedor">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Solicitante</th>
-                            <th>Cantidad de declaraciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for fila in solicitantes %}
-                        <tr>
-                            <td>{{ fila["Solicitante"] }}</td>
-                            <td>{{ fila["Cantidad"] }}</td>
-                        </tr>
-                        {% else %}
-                        <tr><td colspan="2">Sin registros.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <p>Total recibido</p>
+
+            <h2 class="contador-dinero"
+                data-valor="{{ total_recibido | default(0, true) }}">
+                S/ 0.00
+            </h2>
+
+            <span>Importe recibido en soles</span>
+        </article>
+
+
+        <article class="tarjeta">
+            <div class="icono naranja">
+                <i class="bi bi-cart-check"></i>
             </div>
-        </section>
 
-        <footer>
-            PROSIP · Dashboard de Declaraciones Juradas
-        </footer>
+            <p>Total gastado</p>
 
-        {% endif %}
-    </main>
+            <h2 class="contador-dinero"
+                data-valor="{{ total_gastado | default(0, true) }}">
+                S/ 0.00
+            </h2>
+
+            <span>Gastos declarados en soles</span>
+        </article>
+
+
+        <article class="tarjeta">
+            <div class="icono morado">
+                <i class="bi bi-piggy-bank"></i>
+            </div>
+
+            <p>Saldo resultante</p>
+
+            <h2 class="contador-dinero"
+                data-valor="{{ total_saldo | default(0, true) }}">
+                S/ 0.00
+            </h2>
+
+            <span>Saldo disponible en soles</span>
+        </article>
+
+    </section>
+
+
+    <!-- GRAFICOS -->
+
+    <h2 class="seccion-titulo">
+        <i class="bi bi-graph-up-arrow"></i>
+        Análisis estadístico
+    </h2>
+
+    <section class="graficos">
+
+        <article class="panel">
+
+            <h3>
+                <i class="bi bi-bar-chart-fill"></i>
+                Declaraciones por área
+            </h3>
+
+            <div class="grafico-contenedor">
+                <canvas id="graficoProyectos"></canvas>
+            </div>
+
+        </article>
+
+
+        <article class="panel">
+
+            <h3>
+                <i class="bi bi-pie-chart-fill"></i>
+                Gastos por concepto
+            </h3>
+
+            <div class="grafico-contenedor">
+                <canvas id="graficoCentros"></canvas>
+            </div>
+
+        </article>
+
+
+        <article class="panel">
+
+            <h3>
+                <i class="bi bi-people-fill"></i>
+                Declaraciones por solicitante
+            </h3>
+
+            <div class="grafico-contenedor">
+                <canvas id="graficoSolicitantes"></canvas>
+            </div>
+
+        </article>
+
+
+        <article class="panel">
+
+            <h3>
+                <i class="bi bi-cash-stack"></i>
+                Resumen financiero en soles
+            </h3>
+
+            <div class="grafico-contenedor">
+                <canvas id="graficoFinanciero"></canvas>
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- TABLA DE REGISTROS -->
+
+    <h2 class="seccion-titulo">
+        <i class="bi bi-table"></i>
+        Registro general de declaraciones
+    </h2>
+
+    <section class="panel">
+
+        <div class="herramientas">
+
+            <input
+                type="text"
+                id="buscar"
+                placeholder="Buscar por nombre, apellido o concepto..."
+            >
+
+            <select id="filtroArea">
+                <option value="">Todas las áreas</option>
+            </select>
+
+            <button class="boton" onclick="limpiarFiltros()">
+                <i class="bi bi-arrow-counterclockwise"></i>
+                Limpiar
+            </button>
+
+        </div>
+
+
+        <div class="tabla-contenedor">
+
+            <table id="tablaRegistros">
+
+                <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Área</th>
+                        <th>Concepto</th>
+                        <th>Monto recibido</th>
+                        <th>Monto gastado</th>
+                        <th>Saldo resultante</th>
+                    </tr>
+                </thead>
+
+                <tbody id="cuerpoTabla">
+
+                    {% for fila in registros | default([], true) %}
+
+                    <tr>
+
+                        <td>
+                            {{ fila.get("Nombres", fila.get("nombres", "")) }}
+                        </td>
+
+                        <td>
+                            {{ fila.get("Apellidos", fila.get("apellidos", "")) }}
+                        </td>
+
+                        <td>
+                            {{ fila.get("Área", fila.get("Area", fila.get("area", ""))) }}
+                        </td>
+
+                        <td>
+                            {{ fila.get("Concepto", fila.get("concepto", "")) }}
+                        </td>
+
+                        <td class="importe">
+                            S/ {{ fila.get("Monto recibido", fila.get("monto recibido", 0)) }}
+                        </td>
+
+                        <td class="importe">
+                            S/ {{ fila.get("Monto gastado", fila.get("monto gastado", 0)) }}
+                        </td>
+
+                        <td class="saldo">
+                            S/ {{ fila.get("Saldo resultante", fila.get("saldo resultante", 0)) }}
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="7" class="sin-datos">
+                            No hay registros disponibles.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <p id="cantidadResultados" class="mt-3 text-secondary small"></p>
+
+    </section>
+
+
+    {% endif %}
+
+</main>
+
+
+<footer>
+    <strong>PROSIP</strong> · Dashboard Analítico de Declaraciones Juradas
+    <br>
+    Sistema desarrollado para la gestión y control de gastos declarados.
+</footer>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+// ======================================
+// 1. DATOS REALES DE FLASK
+// ======================================
+
+const proyectos = {{ proyectos | default([], true) | tojson }};
+
+const centros = {{ importes_centro | default([], true) | tojson }};
+
+const solicitantes = {{ solicitantes | default([], true) | tojson }};
+
+
+// ======================================
+// 2. RESUMEN FINANCIERO
+// ======================================
+
+const recibido = Number({{ total_recibido | default(0, true) | tojson }});
+
+const gastado = Number({{ total_gastado | default(0, true) | tojson }});
+
+const saldo = Number({{ total_saldo | default(0, true) | tojson }});
+
+
+// ======================================
+// 3. FORMATO DE SOLES
+// ======================================
+
+function soles(valor) {
+
+    return new Intl.NumberFormat("es-PE", {
+        style: "currency",
+        currency: "PEN"
+    }).format(Number(valor) || 0);
+
+}
+
+
+// ======================================
+// 4. ANIMACION DE INDICADORES
+// ======================================
+
+document.querySelectorAll(".contador").forEach(elemento => {
+
+    const valor = Number(elemento.dataset.valor) || 0;
+
+    let actual = 0;
+    const incremento = Math.max(1, Math.ceil(valor / 60));
+
+    const animacion = setInterval(() => {
+
+        actual += incremento;
+
+        if (actual >= valor) {
+            actual = valor;
+            clearInterval(animacion);
+        }
+
+        elemento.textContent = Math.round(actual);
+
+    }, 20);
+
+});
+
+
+document.querySelectorAll(".contador-dinero").forEach(elemento => {
+
+    const valor = Number(elemento.dataset.valor) || 0;
+
+    let actual = 0;
+    const pasos = 60;
+
+    const animacion = setInterval(() => {
+
+        actual += valor / pasos;
+
+        if (actual >= valor) {
+            actual = valor;
+            clearInterval(animacion);
+        }
+
+        elemento.textContent = soles(actual);
+
+    }, 20);
+
+});
+
+
+// ======================================
+// 5. COLORES DE LOS GRAFICOS
+// ======================================
+
+const colores = [
+    "#174b83",
+    "#d9a52e",
+    "#2e9d73",
+    "#7450b7",
+    "#ed8b35",
+    "#36a6c9",
+    "#e16b80"
+];
+
+
+// ======================================
+// 6. GRAFICO POR AREA
+// ======================================
+
+new Chart(document.getElementById("graficoProyectos"), {
+
+    type: "bar",
+
+    data: {
+
+        labels: proyectos.map(x => x["Proyecto"]),
+
+        datasets: [{
+
+            label: "Cantidad de declaraciones",
+
+            data: proyectos.map(x => Number(x["Cantidad"]) || 0),
+
+            backgroundColor: colores,
+
+            borderRadius: 9
+
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        animation: {
+            duration: 1800,
+            easing: "easeOutQuart"
+        },
+
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+
+    }
+
+});
+
+
+// ======================================
+// 7. GRAFICO DE GASTOS POR CONCEPTO
+// ======================================
+
+new Chart(document.getElementById("graficoCentros"), {
+
+    type: "doughnut",
+
+    data: {
+
+        labels: centros.map(x => x["Centro de costo"]),
+
+        datasets: [{
+
+            data: centros.map(x => Number(x["Importe total"]) || 0),
+
+            backgroundColor: colores,
+
+            borderWidth: 3,
+
+            borderColor: "#ffffff"
+
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        cutout: "60%",
+
+        animation: {
+            animateRotate: true,
+            duration: 1800
+        },
+
+        plugins: {
+
+            legend: {
+                position: "bottom"
+            },
+
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ": " + soles(context.raw);
+                    }
+                }
+            }
+
+        }
+
+    }
+
+});
+
+
+// ======================================
+// 8. GRAFICO POR SOLICITANTE
+// ======================================
+
+new Chart(document.getElementById("graficoSolicitantes"), {
+
+    type: "bar",
+
+    data: {
+
+        labels: solicitantes.map(x => x["Solicitante"]),
+
+        datasets: [{
+
+            label: "Declaraciones",
+
+            data: solicitantes.map(x => Number(x["Cantidad"]) || 0),
+
+            backgroundColor: "#d9a52e",
+
+            borderRadius: 9
+
+        }]
+
+    },
+
+    options: {
+
+        indexAxis: "y",
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        animation: {
+            duration: 1800
+        },
+
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+
+    }
+
+});
+
+
+// ======================================
+// 9. GRAFICO FINANCIERO EN SOLES
+// ======================================
+
+new Chart(document.getElementById("graficoFinanciero"), {
+
+    type: "bar",
+
+    data: {
+
+        labels: [
+            "Monto recibido",
+            "Monto gastado",
+            "Saldo resultante"
+        ],
+
+        datasets: [{
+
+            label: "Importe en soles",
+
+            data: [recibido, gastado, saldo],
+
+            backgroundColor: [
+                "#174b83",
+                "#d9a52e",
+                "#2e9d73"
+            ],
+
+            borderRadius: 10
+
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        animation: {
+            duration: 2000
+        },
+
+        plugins: {
+
+            legend: {
+                display: false
+            },
+
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return soles(context.raw);
+                    }
+                }
+            }
+
+        },
+
+        scales: {
+
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: value => soles(value)
+                }
+            }
+
+        }
+
+    }
+
+});
+
+
+// ======================================
+// 10. BUSCADOR DE REGISTROS
+// ======================================
+
+const buscador = document.getElementById("buscar");
+
+const filtroArea = document.getElementById("filtroArea");
+
+const filas = document.querySelectorAll("#cuerpoTabla tr");
+
+
+// Cargar las áreas disponibles
+
+const areas = new Set();
+
+filas.forEach(fila => {
+
+    if (fila.cells.length === 7) {
+
+        const area = fila.cells[2].textContent.trim();
+
+        if (area) {
+            areas.add(area);
+        }
+
+    }
+
+});
+
+areas.forEach(area => {
+
+    const opcion = document.createElement("option");
+
+    opcion.value = area;
+    opcion.textContent = area;
+
+    filtroArea.appendChild(opcion);
+
+});
+
+
+// Aplicar filtros
+
+function filtrarTabla() {
+
+    const texto = buscador.value.toLowerCase();
+
+    const areaSeleccionada = filtroArea.value.toLowerCase();
+
+    let cantidad = 0;
+
+    filas.forEach(fila => {
+
+        if (fila.cells.length !== 7) return;
+
+        const contenido = fila.textContent.toLowerCase();
+
+        const area = fila.cells[2].textContent.trim().toLowerCase();
+
+        const coincideTexto = contenido.includes(texto);
+
+        const coincideArea =
+            !areaSeleccionada || area === areaSeleccionada;
+
+        if (coincideTexto && coincideArea) {
+
+            fila.style.display = "";
+            cantidad++;
+
+        } else {
+
+            fila.style.display = "none";
+
+        }
+
+    });
+
+    document.getElementById("cantidadResultados").textContent =
+        "Registros encontrados: " + cantidad;
+
+}
+
+
+buscador.addEventListener("input", filtrarTabla);
+
+filtroArea.addEventListener("change", filtrarTabla);
+
+
+// ======================================
+// 11. LIMPIAR FILTROS
+// ======================================
+
+function limpiarFiltros() {
+
+    buscador.value = "";
+    filtroArea.value = "";
+
+    filtrarTabla();
+
+}
+
+
+// ======================================
+// 12. CANTIDAD INICIAL DE REGISTROS
+// ======================================
+
+filtrarTabla();
+
+</script>
+
 </body>
 </html>
