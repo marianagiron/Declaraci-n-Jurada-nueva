@@ -634,29 +634,32 @@
 
 
 <!-- JAVASCRIPT -->
+<!-- JAVASCRIPT -->
+
+<div id="datos-flask" hidden
+     data-proyectos='{{ proyectos | default([], true) | tojson }}'
+     data-centros='{{ importes_centro | default([], true) | tojson }}'
+     data-solicitantes='{{ solicitantes | default([], true) | tojson }}'
+     data-recibido='{{ total_recibido | default(0, true) }}'
+     data-gastado='{{ total_gastado | default(0, true) }}'
+     data-saldo='{{ total_saldo | default(0, true) }}'>
+</div>
 
 <script>
+
 
 // ======================================
 // 1. DATOS REALES DE FLASK
 // ======================================
+const datosFlask = document.getElementById("datos-flask").dataset;
 
-const proyectos = {{ proyectos | default([], true) | tojson }};
+const proyectos    = JSON.parse(datosFlask.proyectos);
+const centros      = JSON.parse(datosFlask.centros);
+const solicitantes = JSON.parse(datosFlask.solicitantes);
 
-const centros = {{ importes_centro | default([], true) | tojson }};
-
-const solicitantes = {{ solicitantes | default([], true) | tojson }};
-
-
-// ======================================
-// 2. RESUMEN FINANCIERO
-// ======================================
-
-const recibido = Number({{ total_recibido | default(0, true) | tojson }});
-
-const gastado = Number({{ total_gastado | default(0, true) | tojson }});
-
-const saldo = Number({{ total_saldo | default(0, true) | tojson }});
+const recibido = Number(datosFlask.recibido) || 0;
+const gastado  = Number(datosFlask.gastado)  || 0;
+const saldo    = Number(datosFlask.saldo)    || 0;
 
 
 // ======================================
